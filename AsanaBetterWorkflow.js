@@ -4,7 +4,7 @@
 // @version 0.4
 // @updateURL https://raw.githubusercontent.com/vojtaflorian/TamperMonkey-scripts/main/AsanaBetterWorkflow.js
 // @downloadURL https://raw.githubusercontent.com/vojtaflorian/TamperMonkey-scripts/main/AsanaBetterWorkflow.js
-// @description Forced Asana min width.
+// @description This userscript enhances the Asana workflow by adjusting task pane widths, hiding unnecessary elements, and displaying the number of days until a task’s due date. It also includes a button to toggle the visibility of completed subtasks.
 // @author Vojta Florian
 // @homepage https://vojtaflorian.com
 // @match https://app.asana.com/*
