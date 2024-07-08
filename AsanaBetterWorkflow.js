@@ -2,8 +2,8 @@
 // @name Asana better workflow
 // @namespace http://example.com
 // @version 0.4
-// @updateURL https://raw.githubusercontent.com/vojtaflorian/TamperMonkey-scripts/main/AsanaBetterWorkflow.js
-// @downloadURL https://raw.githubusercontent.com/vojtaflorian/TamperMonkey-scripts/main/AsanaBetterWorkflow.js
+// @updateURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
+// @downloadURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
 // @description This userscript enhances the Asana workflow by adjusting task pane widths, hiding unnecessary elements, and displaying the number of days until a task’s due date. It also includes a button to toggle the visibility of completed subtasks.
 // @author Vojta Florian
 // @homepage https://vojtaflorian.com
