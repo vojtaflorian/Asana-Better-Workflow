@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Asana better workflow
 // @namespace http://example.com
-// @version 0.3
+// @version 0.4
 // @updateURL https://raw.githubusercontent.com/vojtaflorian/TamperMonkey-scripts/main/AsanaBetterWorkflow.js
 // @downloadURL https://raw.githubusercontent.com/vojtaflorian/TamperMonkey-scripts/main/AsanaBetterWorkflow.js
 // @description Forced Asana min width.
