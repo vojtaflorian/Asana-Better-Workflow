@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name Asana better workflow
+// @name Asana Better Workflow
 // @namespace http://example.com
 // @version 0.3
 // @description Forced Asana min width.
