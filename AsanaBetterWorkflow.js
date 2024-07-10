@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name Asana better workflow
 // @namespace http://example.com
-// @version 0.4
+// @version 0.42
 // @updateURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
 // @downloadURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
-// @description This userscript enhances the Asana workflow by adjusting task pane widths, hiding unnecessary elements, and displaying the number of days until a task’s due date. It also includes a button to toggle the visibility of completed subtasks.
+// @description Forced Asana min width.
 // @author Vojta Florian
 // @homepage https://vojtaflorian.com
 // @match https://app.asana.com/*
@@ -124,85 +124,105 @@ mobs.observe(document.body, {
     childList: true,
 });
 /*AUTOCLICK NA NAČTENÍ VŠECH SUBTASKS A CELÝCH KOMENTÁŘŮ*/
-/*TLAČÍTKO PRO SKRÝVÁNÍ HOTOVÝCH ÚKOLŮ*/
-// Funkce pro vytvoření tlačítka
-function createToggleButton() {
-  // Zkontrolovat, zda tlačítko již existuje
-  if (document.querySelector('#toggleCompletedSubtasksButton')) return;
+  /*TLAČÍTKO PRO SKRÝVÁNÍ HOTOVÝCH ÚKOLŮ*/
+    function createToggleButton() {
+      if (document.querySelector('#toggleCompletedSubtasksButton')) return;
 
-  const button = document.createElement('button');
-  button.id = 'toggleCompletedSubtasksButton';
-  button.innerText = 'Toggle Completed Subtasks';
-  button.style.marginLeft = '10px';
-/*  button.style.padding = '5px 10px';*/
-  button.style.cursor = 'pointer';
-  button.classList.add('ThemeableRectangularButtonPresentation', 'ThemeableRectangularButtonPresentation--medium', 'TopbarContingentUpgradeButton-button', 'UpsellButton');
+      const button = document.createElement('button');
+      button.id = 'toggleCompletedSubtasksButton';
+      button.innerText = 'Toggle Completed Subtasks';
+      button.style.marginLeft = '10px';
+      button.style.cursor = 'pointer';
+      button.classList.add('ThemeableRectangularButtonPresentation', 'ThemeableRectangularButtonPresentation--medium', 'TopbarContingentUpgradeButton-button', 'UpsellButton');
 
-  // Přidání funkce pro zapínání a vypínání stylu
-  button.addEventListener('click', () => {
-    const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
-    const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
-    completedSubtasks.forEach(subtask => {
-      if (currentState) {
-        subtask.style.display = '';
-      } else {
-        subtask.style.display = 'none';
+      button.addEventListener('click', () => {
+        toggleCompletedSubtasks();
+        updateTaskIndicators();
+      });
+
+      const topbarRightSide = document.querySelector('.GlobalTopbarStructure-rightSide');
+      if (topbarRightSide) {
+        topbarRightSide.appendChild(button);
       }
-    });
-    localStorage.setItem('completedSubtasksHidden', !currentState);
-  });
-
-  // Přidání tlačítka do divu
-  const topbarRightSide = document.querySelector('.GlobalTopbarStructure-rightSide');
-  if (topbarRightSide) {
-    topbarRightSide.appendChild(button);
-  }
-}
-
-// Funkce pro aplikování stavu tlačítka při načtení stránky
-function applySavedState() {
-  const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
-  const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
-  completedSubtasks.forEach(subtask => {
-    if (currentState) {
-      subtask.style.display = 'none';
-    } else {
-      subtask.style.display = '';
     }
-  });
-}
 
-// Funkce pro kliknutí na tlačítka
-function clickButtons() {
-  let links = document.querySelectorAll('.SubtaskGrid-loadMore, .TruncatedRichText-expand');
-  Array.from(links).forEach(link => {
-    link.click();
-  });
-}
+    function applySavedState() {
+      const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
+      const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
+      completedSubtasks.forEach(subtask => {
+        if (currentState) {
+          subtask.style.display = 'none';
+        } else {
+          subtask.style.display = '';
+        }
+      });
+      updateTaskIndicators();
+    }
 
-// Inicializace kliknutí při načtení stránky a vytvoření tlačítka
-document.addEventListener('DOMContentLoaded', () => {
-  clickButtons();
-  createToggleButton();
-  applySavedState(); // Aplikování uloženého stavu
-});
+    function toggleCompletedSubtasks() {
+      const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
+      const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
+      completedSubtasks.forEach(subtask => {
+        if (currentState) {
+          subtask.style.display = '';
+        } else {
+          subtask.style.display = 'none';
+        }
+      });
+      localStorage.setItem('completedSubtasksHidden', !currentState);
+    }
 
-// Nastavení MutationObserver pro sledování změn v DOM
-const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.type === 'childList') {
+    function updateTaskIndicators() {
+      const tasks = document.querySelectorAll('.TaskPaneSubtasks-label');
+      tasks.forEach(task => {
+        const subtasks = task.closest('.TaskPane').querySelectorAll('.SubtaskTaskRow--completed');
+        const indicator = task.querySelector('.completed-subtasks-indicator');
+
+        if (localStorage.getItem('completedSubtasksHidden') === 'true' && subtasks.length > 0) {
+          if (!indicator) {
+            const newIndicator = document.createElement('span');
+            newIndicator.classList.add('completed-subtasks-indicator');
+            newIndicator.innerText = ' [Hide subtasks]';
+            newIndicator.style.color = 'red';
+            newIndicator.style.cursor = 'pointer';
+            newIndicator.addEventListener('click', () => {
+              toggleCompletedSubtasks();
+              updateTaskIndicators();
+            });
+            task.querySelector('.LabeledRowStructure-right .LabeledRowStructure-content').appendChild(newIndicator);
+          }
+        } else if (indicator) {
+          indicator.remove();
+        }
+      });
+    }
+
+    function clickButtons() {
+      let links = document.querySelectorAll('.SubtaskGrid-loadMore, .TruncatedRichText-expand');
+      Array.from(links).forEach(link => {
+        link.click();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
       clickButtons();
       createToggleButton();
-      applySavedState(); // Aplikování uloženého stavu při změně DOM
-    }
-  });
-});
+      applySavedState();
+    });
 
-// Nastavení observeru na root element stránky
-observer.observe(document.body, {
-  childList: true,
-  subtree: true
-});
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          clickButtons();
+          createToggleButton();
+          applySavedState();
+        }
+      });
+    });
 
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
 
 })();
