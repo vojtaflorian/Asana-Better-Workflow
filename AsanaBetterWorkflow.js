@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Asana better workflow
 // @namespace http://example.com
-// @version 0.42
+// @version 0.43
 // @updateURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
 // @downloadURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
 // @description Forced Asana min width.
@@ -28,23 +28,14 @@
    min-width: 50% !important;
 }
 
-.Sidebar-changeInviteIconEnabled {
-     display: none !important;
-}
-
-.Sidebar-cleanAndClearInviteAndHelpSection {
-     display: none !important;
-}
-
-.BusinessOrAdvancedUpgradeButton {
-     display: none !important;
-}
-
-.GlobalTopbar-upgradeButton {
-     display: none !important;
-}
+.Sidebar-changeInviteIconEnabled,
+.Sidebar-cleanAndClearInviteAndHelpSection,
+.BusinessOrAdvancedUpgradeButton,
+.GlobalTopbar-upgradeButton,
 /*odebírá placené funkce*/
-.PremiumIconItemA11y {
+.PremiumIconItemA11y,
+.TaskPaneGenerateSubtasksButton,
+.AiAssistantGlobalTopbarPaneButtonPresentation {
      display: none !important;
 }
 
@@ -125,104 +116,102 @@ mobs.observe(document.body, {
 });
 /*AUTOCLICK NA NAČTENÍ VŠECH SUBTASKS A CELÝCH KOMENTÁŘŮ*/
   /*TLAČÍTKO PRO SKRÝVÁNÍ HOTOVÝCH ÚKOLŮ*/
-    function createToggleButton() {
-      if (document.querySelector('#toggleCompletedSubtasksButton')) return;
+   function createToggleButton() {
+        if (document.querySelector('#toggleCompletedSubtasksButton')) return;
 
-      const button = document.createElement('button');
-      button.id = 'toggleCompletedSubtasksButton';
-      button.innerText = 'Toggle Completed Subtasks';
-      button.style.marginLeft = '10px';
-      button.style.cursor = 'pointer';
-      button.classList.add('ThemeableRectangularButtonPresentation', 'ThemeableRectangularButtonPresentation--medium', 'TopbarContingentUpgradeButton-button', 'UpsellButton');
+        const button = document.createElement('button');
+        button.id = 'toggleCompletedSubtasksButton';
+        button.innerText = 'Toggle Complete tasks';
+        button.style.marginLeft = '10px';
+        button.style.cursor = 'pointer';
+        button.classList.add('ThemeableRectangularButtonPresentation', 'ThemeableRectangularButtonPresentation--medium', 'TopbarContingentUpgradeButton-button', 'UpsellButton');
 
-      button.addEventListener('click', () => {
-        toggleCompletedSubtasks();
-        updateTaskIndicators();
-      });
+        button.addEventListener('click', () => {
+            toggleCompletedSubtasks();
+            updateTaskIndicators();
+        });
 
-      const topbarRightSide = document.querySelector('.GlobalTopbarStructure-rightSide');
-      if (topbarRightSide) {
-        topbarRightSide.appendChild(button);
-      }
+        const topbarRightSide = document.querySelector('.GlobalTopbarStructure-rightSide');
+        if (topbarRightSide) {
+            topbarRightSide.appendChild(button);
+        }
     }
 
     function applySavedState() {
-      const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
-      const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
-      completedSubtasks.forEach(subtask => {
-        if (currentState) {
-          subtask.style.display = 'none';
-        } else {
-          subtask.style.display = '';
-        }
-      });
-      updateTaskIndicators();
+        const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
+        const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
+        completedSubtasks.forEach(subtask => {
+            if (currentState) {
+                subtask.style.display = 'none';
+            } else {
+                subtask.style.display = '';
+            }
+        });
+        updateTaskIndicators();
     }
 
     function toggleCompletedSubtasks() {
-      const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
-      const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
-      completedSubtasks.forEach(subtask => {
-        if (currentState) {
-          subtask.style.display = '';
-        } else {
-          subtask.style.display = 'none';
-        }
-      });
-      localStorage.setItem('completedSubtasksHidden', !currentState);
+        const completedSubtasks = document.querySelectorAll('.SubtaskTaskRow--completed');
+        const currentState = localStorage.getItem('completedSubtasksHidden') === 'true';
+        completedSubtasks.forEach(subtask => {
+            if (currentState) {
+                subtask.style.display = '';
+            } else {
+                subtask.style.display = 'none';
+            }
+        });
+        localStorage.setItem('completedSubtasksHidden', !currentState);
     }
 
     function updateTaskIndicators() {
-      const tasks = document.querySelectorAll('.TaskPaneSubtasks-label');
-      tasks.forEach(task => {
-        const subtasks = task.closest('.TaskPane').querySelectorAll('.SubtaskTaskRow--completed');
-        const indicator = task.querySelector('.completed-subtasks-indicator');
+        const tasks = document.querySelectorAll('.TaskPaneSubtasks-label');
+        tasks.forEach(task => {
+            const subtasks = task.closest('.TaskPane').querySelectorAll('.SubtaskTaskRow--completed');
+            let indicator = task.querySelector('.completed-subtasks-indicator');
 
-        if (localStorage.getItem('completedSubtasksHidden') === 'true' && subtasks.length > 0) {
-          if (!indicator) {
-            const newIndicator = document.createElement('span');
-            newIndicator.classList.add('completed-subtasks-indicator');
-            newIndicator.innerText = ' [Hide subtasks]';
-            newIndicator.style.color = 'red';
-            newIndicator.style.cursor = 'pointer';
-            newIndicator.addEventListener('click', () => {
-              toggleCompletedSubtasks();
-              updateTaskIndicators();
-            });
-            task.querySelector('.LabeledRowStructure-right .LabeledRowStructure-content').appendChild(newIndicator);
-          }
-        } else if (indicator) {
-          indicator.remove();
-        }
-      });
+            if (subtasks.length > 0) {
+                if (!indicator) {
+                    indicator = document.createElement('span');
+                    indicator.classList.add('completed-subtasks-indicator');
+                    indicator.innerText = ' [Toggle Complete tasks]';
+                    indicator.style.color = 'red';
+                    indicator.style.cursor = 'pointer';
+                    indicator.addEventListener('click', () => {
+                        toggleCompletedSubtasks();
+                        updateTaskIndicators();
+                    });
+                    task.querySelector('.LabeledRowStructure-right .LabeledRowStructure-content').appendChild(indicator);
+                }
+            } else if (indicator) {
+                indicator.remove();
+            }
+        });
     }
 
     function clickButtons() {
-      let links = document.querySelectorAll('.SubtaskGrid-loadMore, .TruncatedRichText-expand');
-      Array.from(links).forEach(link => {
-        link.click();
-      });
+        const links = document.querySelectorAll('.SubtaskGrid-loadMore, .TruncatedRichText-expand');
+        links.forEach(link => link.click());
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      clickButtons();
-      createToggleButton();
-      applySavedState();
+        clickButtons();
+        createToggleButton();
+        applySavedState();
     });
 
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          clickButtons();
-          createToggleButton();
-          applySavedState();
-        }
-      });
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList') {
+                clickButtons();
+                createToggleButton();
+                applySavedState();
+            }
+        });
     });
 
     observer.observe(document.body, {
-      childList: true,
-      subtree: true
+        childList: true,
+        subtree: true
     });
 
 })();
