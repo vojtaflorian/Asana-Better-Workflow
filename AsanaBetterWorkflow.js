@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Asana better workflow
 // @namespace http://example.com
-// @version 0.44
+// @version 0.442
 // @updateURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
 // @downloadURL https://raw.githubusercontent.com/vojtaflorian/Asana-Better-Workflow/main/AsanaBetterWorkflow.js
 // @description Forced Asana min width.
@@ -173,7 +173,7 @@ mobs.observe(document.body, {
                 if (!indicator) {
                     indicator = document.createElement('span');
                     indicator.classList.add('completed-subtasks-indicator');
-                    indicator.innerText = ' [Skryté dokončené subúkoly]';
+                    indicator.innerText = ' [Toggle Complete tasks]';
                     indicator.style.color = '#eb7586';
                     indicator.style.cursor = 'pointer';
                     indicator.addEventListener('click', () => {
